@@ -1,0 +1,50 @@
+version: "2.4"
+services:
+  piwigo:
+    image: linuxserver/piwigo:latest
+    container_name: piwigo
+    depends_on:
+      - mariadb
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+    volumes:
+      - ./config/piwigo:/config
+      - piwigo_www:/config/www
+      - piwigo_log:/config/log
+      - ./config/piwigo/config:/config/www/gallery/local/config
+    ports:
+      - 80:80
+    restart: unless-stopped
+  mariadb:
+    image: linuxserver/mariadb:latest
+    container_name: mariadb
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+      - MYSQL_ROOT_PASSWORD=XXX
+      - MYSQL_DATABASE=piwigo
+      - MYSQL_USER=piwigo
+      - MYSQL_PASSWORD=XXX
+    volumes:
+      - ./config/mariadb:/config
+      - mariadb_databases:/config/databases
+      - mariadb_log:/config/log
+    ports:
+      - 3306:3306
+    restart: unless-stopped
+  seafile:
+    container_name: seafile
+    image: skycoder42/seafile:latest
+    build:
+      context: seafile
+      args:
+        SEAFILE_VERSION: 7.0.9
+        LIBSEARPC_VERSION: 3.2.0
+volumes:
+  piwigo_www:
+  piwigo_log:
+  mariadb_databases:
+  mariadb_log:
