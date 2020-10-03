@@ -27,10 +27,10 @@ RUN make
 RUN make DESTDIR=/deploy install
 
 FROM alpine:latest
-RUN apk add --no-cache python3 sqlite-libs jansson libevent libcurl libuuid glib
+RUN apk add --no-cache python3 sqlite-libs jansson libevent libcurl libuuid glib bash
 COPY --from=python /deploy /
 COPY --from=libsearpc /deploy /
 COPY --from=seafile /deploy /
+COPY entrypoint.sh /usr/bin/entrypoint.sh
 RUN mkdir -p /seafile
-RUN seaf-cli init -d /seafile
-ENTRYPOINT ["seaf-daemon", "-c", "/root/.ccnet", "-d", "/seafile/seafile-data", "-w", "/seafile/seafile"]
+ENTRYPOINT [ "/usr/bin/entrypoint.sh" ]

@@ -43,8 +43,21 @@ services:
       args:
         SEAFILE_VERSION: 7.0.9
         LIBSEARPC_VERSION: 3.2.0
+    environment:
+      LIBRARY: XXX
+      SERVER: XXX
+      USERNAME: XXX
+      PASSWORD: XXX
+      # LIBPASSWD:
+    volumes:
+      - seafile_config:/root/.ccnet
+      - seafile_data:/seafile/seafile-data
+      - seafile_libraries:/seafile/libraries
 volumes:
   piwigo_www:
   piwigo_log:
   mariadb_databases:
   mariadb_log:
+  seafile_config:
+  seafile_data:
+  seafile_libraries:
