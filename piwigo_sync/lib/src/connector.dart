@@ -1,10 +1,24 @@
 import 'dart:io';
 import 'package:html/parser.dart' show parse;
 import 'package:meta/meta.dart';
+import 'package:piwigo_sync/src/page_parser.dart';
 
 enum SyncMode {
   files,
   dirs,
+}
+
+extension _SyncModeX on SyncMode {
+  String get value {
+    switch (this) {
+      case SyncMode.files:
+        return "files";
+      case SyncMode.dirs:
+        return "dirs";
+      default:
+        return "";
+    }
+  }
 }
 
 enum PrivacyLevel {
@@ -35,6 +49,8 @@ extension _PrivacyLevelX on PrivacyLevel {
 }
 
 class PiwigoConnector {
+  static const _parser = PageParser();
+
   final String _host;
   final int _port;
   final HttpClient _client;
@@ -69,7 +85,7 @@ class PiwigoConnector {
     }
   }
 
-  Future<void> sync({
+  Future<List<String>> sync({
     SyncMode syncMode = SyncMode.dirs,
     bool displayInfo = false,
     bool addToCaddie = false,
@@ -80,10 +96,11 @@ class PiwigoConnector {
     bool simulate = false,
     bool subcatsIncluded = true,
   }) async {
+    const path = "/admin.php?page=site_update&site=1";
     final response = await _post(
-      "admin.php?page=site_update&site=1",
+      path,
       {
-        "sync": syncMode?.toString() ?? "",
+        "sync": syncMode.value,
         "display_info": displayInfo ? "1" : "0",
         "add_to_caddie": addToCaddie ? "1" : "0",
         "privacy_level": privacyLevel.value.toString(),
@@ -99,7 +116,15 @@ class PiwigoConnector {
       throw "Failed to initiate sync with status code ${response.statusCode}";
     }
 
-    // final htmlDoc = parse(await response.join(), sourceUrl: response.connectionInfo.);
+    return _parser(
+      response,
+      Uri(
+        scheme: "http",
+        host: _host,
+        port: _port,
+        path: path,
+      ),
+    );
   }
 
   @mustCallSuper

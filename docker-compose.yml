@@ -6,32 +6,27 @@ services:
     depends_on:
       - mariadb
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Berlin
+      PUID: 1000
+      PGID: 1000
+      TZ: Europe/Berlin
     volumes:
-      - ./config/piwigo:/config
-      - piwigo_www:/config/www
-      - piwigo_log:/config/log
-      - ./config/piwigo/config:/config/www/gallery/local/config
+      - piwigo:/config
     ports:
       - 80:80
     restart: unless-stopped
   mariadb:
     image: linuxserver/mariadb:latest
     container_name: mariadb
+    env_file:
+      - secrets/mariadb.env
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Berlin
-      - MYSQL_ROOT_PASSWORD=XXX
-      - MYSQL_DATABASE=piwigo
-      - MYSQL_USER=piwigo
-      - MYSQL_PASSWORD=XXX
+      PUID: 1000
+      PGID: 1000
+      TZ: Europe/Berlin
+      MYSQL_DATABASE: piwigo
+      MYSQL_USER: piwigo
     volumes:
-      - ./config/mariadb:/config
-      - mariadb_databases:/config/databases
-      - mariadb_log:/config/log
+      - mariadb:/config
     ports:
       - 3306:3306
     restart: unless-stopped
@@ -43,21 +38,16 @@ services:
       args:
         SEAFILE_VERSION: 7.0.9
         LIBSEARPC_VERSION: 3.2.0
-    environment:
-      LIBRARY: XXX
-      SERVER: XXX
-      USERNAME: XXX
-      PASSWORD: XXX
-      # LIBPASSWD:
+    env_file:
+      - secrets/seafile.env
     volumes:
       - seafile_config:/root/.ccnet
       - seafile_data:/seafile/seafile-data
       - seafile_libraries:/seafile/libraries
+    restart: unless-stopped
 volumes:
-  piwigo_www:
-  piwigo_log:
-  mariadb_databases:
-  mariadb_log:
+  piwigo:
+  mariadb:
   seafile_config:
   seafile_data:
   seafile_libraries:
