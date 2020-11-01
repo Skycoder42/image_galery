@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:html/parser.dart' show parse;
 import 'package:meta/meta.dart';
 import 'package:piwigo_sync/src/page_parser.dart';
 

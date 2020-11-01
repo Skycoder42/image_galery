@@ -9,5 +9,6 @@ RUN mkdir build
 RUN dart compile exe -o build/piwigo_sync bin/piwigo_sync.dart
 
 FROM gcr.io/google-appengine/debian10:latest
-COPY --from=build /app/build/piwigo_sync /bin/
-ENTRYPOINT [ "/bin/piwigo_sync" ]
+COPY --from=build /app/build/piwigo_sync /usr/bin/
+COPY entrypoint.sh /usr/bin/entrypoint.sh
+ENTRYPOINT [ "/usr/bin/entrypoint.sh" ]
