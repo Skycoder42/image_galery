@@ -12,7 +12,6 @@ RUN git clone https://github.com/haiwen/libsearpc.git --branch v$LIBSEARPC_VERSI
 RUN sh ./autogen.sh
 RUN sh ./configure -prefix=/usr
 RUN make
-RUN make check
 RUN make DESTDIR=/deploy install
 
 FROM base as seafile

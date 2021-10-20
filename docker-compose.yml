@@ -36,8 +36,8 @@ services:
   #   build:
   #     context: seafile
   #     args:
-  #       SEAFILE_VERSION: 7.0.9
-  #       LIBSEARPC_VERSION: 3.2.0
+  #       SEAFILE_VERSION: 8.0.4
+  #       LIBSEARPC_VERSION: 3.2-latest
   #   env_file:
   #     - secrets/seafile.env
   #   volumes:
