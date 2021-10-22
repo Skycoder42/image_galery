@@ -26,7 +26,7 @@ RUN make
 RUN make DESTDIR=/deploy install
 
 FROM alpine:latest
-RUN apk add --no-cache python3 sqlite-libs jansson libevent libcurl libuuid glib bash
+RUN apk add --no-cache python3 sqlite-libs jansson libevent libcurl libuuid glib
 COPY --from=python /deploy /
 COPY --from=libsearpc /deploy /
 COPY --from=seafile /deploy /

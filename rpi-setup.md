@@ -89,3 +89,14 @@
          - `Unattended-Upgrade::Automatic-Reboot-WithUsers "true";`
          - `Unattended-Upgrade::Automatic-Reboot-Time "02:00";`
       4. Test: `sudo unattended-upgrade -d [--dry-run]`
+3. Setup and test Docker
+   1. Install libseccomp backport (Only for Raspbian based on Debian Buster)
+      1. Get Signing Keys: `sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 04EE7237B7D453EC 648ACFD622F3D138`
+      2. Add Backport Repo to package sources: `echo 'deb http://httpredir.debian.org/debian buster-backports main contrib non-free' | sudo tee -a /etc/apt/sources.list.d/debian-backports.list`
+      3. Update: `sudo apt update`
+      4. Install backport: `sudo apt install libseccomp2 -t buster-backports`
+   2. Install Docker:
+      - Download Script: `curl -fsSL https://get.docker.com -o get-docker.sh`
+      - Execute Script: `sudo sh get-docker.sh && rm get-docker.sh`
+   3. Test Docker + Alpine Networking: `sudo docker run --rm -it alpine:latest /bin/ping 8.8.8.8`
+4. Build Seafile: `sudo build-seafile.sh`
