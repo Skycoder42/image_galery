@@ -20,6 +20,8 @@
          - `(umask 077 && mkdir ~/.ssh && touch ~/.ssh/authorized_keys)`
          - Add public key to authorized_keys
    2. Disabled Password & root login
+      - `sudo passwd -l root`
+      - `sudo usermod -s /usr/sbin/nologin root`
       - `sudo nano /etc/ssh/sshd_config`
          - `ChallengeResponseAuthentication no`
          - `PasswordAuthentication no`
@@ -31,7 +33,6 @@
    4. Setup Git
       1. Configure Git (globally):
          ```.config
-         credential.helper store
          gpg.program $(which gpg)
          user.name Skycoder42
          user.email Skycoder42@users.noreply.github.com
@@ -44,3 +45,47 @@
          - Import: `gpg --import <key-file>`
          - Trust: `gpg --edit-key <key-id> trust quit`
          - Add to .zshrc: `export GPG_TTY=$(tty)`
+2. Unattended Upgrades
+   1. Install: `apt install unattended-upgrades msmtp msmtp-mta`
+   2. Setup msmtp, create `/root/.msmtprc`:
+      ```.conf
+      defaults
+      port 465
+      tls on
+      tls_starttls off
+
+      account <account-name>
+      host mail.gmx.net
+      from <email>
+
+      auth on
+      user <email>
+      password <password>
+
+      account default : <account-name>
+      ```
+   3. Setup Unattended Upgrades
+      1. Setup: `sudo dpkg-reconfigure -plow unattended-upgrades`
+      2. Modify `/etc/apt/apt.conf.d/20auto-upgrades`:
+         ```
+         APT::Periodic::Update-Package-Lists "1";
+         APT::Periodic::Download-Upgradeable-Packages "1";
+         APT::Periodic::Unattended-Upgrade "1";
+         APT::Periodic::AutocleanInterval "7";
+         ```
+      3. Modify `/etc/apt/apt.conf.d/50unattended-upgrades`:
+         - ```
+           Unattended-Upgrade::Origins-Pattern {
+             "origin=*";
+           }
+           ```
+         - `Unattended-Upgrade::AutoFixInterruptedDpkg "true";`
+         - `Unattended-Upgrade::MinimalSteps "true";`
+         - `Unattended-Upgrade::Mail "<email>";`
+         - `Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";`
+         - `Unattended-Upgrade::Remove-New-Unused-Dependencies "true";`
+         - `Unattended-Upgrade::Remove-Unused-Dependencies "true";`
+         - `Unattended-Upgrade::Automatic-Reboot "true";`
+         - `Unattended-Upgrade::Automatic-Reboot-WithUsers "true";`
+         - `Unattended-Upgrade::Automatic-Reboot-Time "02:00";`
+      4. Test: `sudo unattended-upgrade -d [--dry-run]`
